@@ -43,16 +43,47 @@ class GroqBatchNode:
                     {
                         "multiline": True,
                         "default": json.dumps(["Tell me a joke", "What is 2+2?", "Name a color"], indent=2),
+                        "description": "JSON array of prompts to process in parallel"
                     },
                 ),
-                "model": (models, {"default": models[0]}),
-                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
-                "max_tokens": ("INT", {"default": 1024, "min": 1, "max": 32768, "step": 1}),
+                "model": (models, {
+                    "default": models[0],
+                    "description": "Model to use for all prompts"
+                }),
+                "temperature": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 2.0,
+                    "step": 0.1,
+                    "display": "slider",
+                    "description": "Controls randomness in responses"
+                }),
+                "max_tokens": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 32768,
+                    "step": 1,
+                    "description": "Maximum tokens per response"
+                }),
             },
             "optional": {
-                "api_key": ("STRING", {"default": "", "multiline": False}),
-                "system_prompt": ("STRING", {"multiline": True, "default": ""}),
-                "max_concurrent": ("INT", {"default": 5, "min": 1, "max": 20, "step": 1}),
+                "api_key": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "description": "Groq API key (leave empty to use .env file)"
+                }),
+                "system_prompt": ("STRING", {
+                    "multiline": True,
+                    "default": "",
+                    "description": "System instructions applied to all prompts"
+                }),
+                "max_concurrent": ("INT", {
+                    "default": 5,
+                    "min": 1,
+                    "max": 20,
+                    "step": 1,
+                    "description": "Maximum number of concurrent requests"
+                }),
             },
         }
 

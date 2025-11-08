@@ -37,15 +37,44 @@ class GroqAudioNode:
 
         return {
             "required": {
-                "audio_path": ("STRING", {"default": "", "multiline": False}),
-                "model": (models, {"default": models[0]}),
+                "audio_path": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "description": "Path to audio file (mp3, wav, m4a, etc.)"
+                }),
+                "model": (models, {
+                    "default": models[0],
+                    "description": "Whisper model for transcription"
+                }),
             },
             "optional": {
-                "api_key": ("STRING", {"default": "", "multiline": False}),
-                "language": ("STRING", {"default": "", "multiline": False}),
-                "prompt": ("STRING", {"multiline": True, "default": ""}),
-                "response_format": (["json", "text", "verbose_json"], {"default": "json"}),
-                "temperature": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.1, "display": "slider"}),
+                "api_key": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "description": "Groq API key (leave empty to use .env file)"
+                }),
+                "language": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "description": "Language code (e.g., 'en', 'es') - leave empty for auto-detect"
+                }),
+                "prompt": ("STRING", {
+                    "multiline": True,
+                    "default": "",
+                    "description": "Optional prompt to guide transcription style"
+                }),
+                "response_format": (["json", "text", "verbose_json"], {
+                    "default": "json",
+                    "description": "Output format: json/text/verbose_json"
+                }),
+                "temperature": ("FLOAT", {
+                    "default": 0.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                    "display": "slider",
+                    "description": "Sampling temperature for transcription"
+                }),
             },
         }
 

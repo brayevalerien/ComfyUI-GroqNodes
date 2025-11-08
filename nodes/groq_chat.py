@@ -42,18 +42,59 @@ class GroqChatNode:
                     {
                         "multiline": True,
                         "default": "In a single sentence, describe the moon using the kawaii neko style.",
+                        "description": "Your message to send to the model"
                     },
                 ),
-                "model": (models, {"default": models[0]}),
-                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
-                "max_tokens": ("INT", {"default": 1024, "min": 1, "max": 32768, "step": 1}),
-                "top_p": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.05, "display": "slider"}),
+                "model": (models, {
+                    "default": models[0],
+                    "description": "Groq model to use for generation"
+                }),
+                "temperature": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 2.0,
+                    "step": 0.1,
+                    "display": "slider",
+                    "description": "Controls randomness: 0 is focused, 2 is creative"
+                }),
+                "max_tokens": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 32768,
+                    "step": 1,
+                    "description": "Maximum number of tokens to generate"
+                }),
+                "top_p": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.05,
+                    "display": "slider",
+                    "description": "Nucleus sampling: lower values focus on likely tokens"
+                }),
             },
             "optional": {
-                "api_key": ("STRING", {"default": "", "multiline": False}),
-                "system_prompt": ("STRING", {"multiline": True, "default": ""}),
-                "conversation_history": ("STRING", {"multiline": True, "default": "[]"}),
-                "seed": ("INT", {"default": -1, "min": -1, "max": 2147483647}),
+                "api_key": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "description": "Groq API key (leave empty to use .env file)"
+                }),
+                "system_prompt": ("STRING", {
+                    "multiline": True,
+                    "default": "",
+                    "description": "System instructions to guide model behavior"
+                }),
+                "conversation_history": ("STRING", {
+                    "multiline": True,
+                    "default": "[]",
+                    "description": "JSON array of previous messages for context"
+                }),
+                "seed": ("INT", {
+                    "default": -1,
+                    "min": -1,
+                    "max": 2147483647,
+                    "description": "Random seed for reproducibility (-1 for random)"
+                }),
             },
         }
 

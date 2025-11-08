@@ -37,7 +37,11 @@ class GroqToolUseNode:
 
         return {
             "required": {
-                "prompt": ("STRING", {"multiline": True, "default": "What is the weather in San Francisco?"}),
+                "prompt": ("STRING", {
+                    "multiline": True,
+                    "default": "What is the weather in San Francisco?",
+                    "description": "User prompt that may trigger tool calls"
+                }),
                 "tools_json": (
                     "STRING",
                     {
@@ -62,15 +66,36 @@ class GroqToolUseNode:
                             ],
                             indent=2,
                         ),
+                        "description": "JSON array defining available functions/tools"
                     },
                 ),
-                "model": (models, {"default": models[0]}),
-                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
+                "model": (models, {
+                    "default": models[0],
+                    "description": "Model to use for tool calling"
+                }),
+                "temperature": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 2.0,
+                    "step": 0.1,
+                    "display": "slider",
+                    "description": "Controls randomness in tool selection"
+                }),
             },
             "optional": {
-                "api_key": ("STRING", {"default": "", "multiline": False}),
-                "tool_choice": (["auto", "required", "none"], {"default": "auto"}),
-                "parallel_tool_calls": ("BOOLEAN", {"default": True}),
+                "api_key": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "description": "Groq API key (leave empty to use .env file)"
+                }),
+                "tool_choice": (["auto", "required", "none"], {
+                    "default": "auto",
+                    "description": "How model should use tools: auto/required/none"
+                }),
+                "parallel_tool_calls": ("BOOLEAN", {
+                    "default": True,
+                    "description": "Allow calling multiple tools simultaneously"
+                }),
             },
         }
 

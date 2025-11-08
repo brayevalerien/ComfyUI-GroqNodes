@@ -38,16 +38,50 @@ class GroqVisionNode:
 
         return {
             "required": {
-                "image": ("IMAGE",),
-                "prompt": ("STRING", {"multiline": True, "default": "What is in this image?"}),
-                "model": (models, {"default": models[0]}),
-                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
-                "max_tokens": ("INT", {"default": 1024, "min": 1, "max": 8192, "step": 1}),
+                "image": ("IMAGE", {"description": "Image or batch of images to analyze"}),
+                "prompt": ("STRING", {
+                    "multiline": True,
+                    "default": "What is in this image?",
+                    "description": "Question or instruction about the image"
+                }),
+                "model": (models, {
+                    "default": models[0],
+                    "description": "Vision model to use for image analysis"
+                }),
+                "temperature": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 2.0,
+                    "step": 0.1,
+                    "display": "slider",
+                    "description": "Controls randomness in responses"
+                }),
+                "max_tokens": ("INT", {
+                    "default": 1024,
+                    "min": 1,
+                    "max": 8192,
+                    "step": 1,
+                    "description": "Maximum tokens in response"
+                }),
             },
             "optional": {
-                "api_key": ("STRING", {"default": "", "multiline": False}),
-                "system_prompt": ("STRING", {"multiline": True, "default": ""}),
-                "jpeg_quality": ("INT", {"default": 95, "min": 50, "max": 100, "step": 5}),
+                "api_key": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "description": "Groq API key (leave empty to use .env file)"
+                }),
+                "system_prompt": ("STRING", {
+                    "multiline": True,
+                    "default": "",
+                    "description": "System instructions for the vision model"
+                }),
+                "jpeg_quality": ("INT", {
+                    "default": 95,
+                    "min": 50,
+                    "max": 100,
+                    "step": 5,
+                    "description": "Image compression quality (50-100)"
+                }),
             },
         }
 
