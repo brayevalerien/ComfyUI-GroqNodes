@@ -1,9 +1,9 @@
 # pyproject.toml
 [project]
 name = "comfyui-groqnodes"
-description = ""
+description = "ComfyUI nodes for Groq API - chat, vision, audio, tool use, and batch processing"
 version = "1.0.1"
-license = { file = "LICENSE.txt" }
+license = { file = "LICENSE" }
 dependencies  = []
 
 [project.urls]
