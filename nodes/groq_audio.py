@@ -5,14 +5,10 @@ Provides audio transcription capabilities using Groq's Whisper models.
 Supports various audio formats and returns timing metadata.
 """
 
-from typing import Dict, Any, Tuple
 from pathlib import Path
+from typing import Any, Dict, Tuple
 
-from .groq_utils import (
-    GroqAPIManager,
-    RetryHandler,
-    ModelCache
-)
+from .groq_utils import GroqAPIManager, ModelCache, RetryHandler
 
 
 class GroqAudioNode:
@@ -41,38 +37,16 @@ class GroqAudioNode:
 
         return {
             "required": {
-                "audio_path": ("STRING", {
-                    "default": "",
-                    "multiline": False
-                }),
-                "model": (models, {
-                    "default": models[0]
-                }),
+                "audio_path": ("STRING", {"default": "", "multiline": False}),
+                "model": (models, {"default": models[0]}),
             },
             "optional": {
-                "api_key": ("STRING", {
-                    "default": "",
-                    "multiline": False
-                }),
-                "language": ("STRING", {
-                    "default": "",
-                    "multiline": False
-                }),
-                "prompt": ("STRING", {
-                    "multiline": True,
-                    "default": ""
-                }),
-                "response_format": (["json", "text", "verbose_json"], {
-                    "default": "json"
-                }),
-                "temperature": ("FLOAT", {
-                    "default": 0.0,
-                    "min": 0.0,
-                    "max": 1.0,
-                    "step": 0.1,
-                    "display": "slider"
-                }),
-            }
+                "api_key": ("STRING", {"default": "", "multiline": False}),
+                "language": ("STRING", {"default": "", "multiline": False}),
+                "prompt": ("STRING", {"multiline": True, "default": ""}),
+                "response_format": (["json", "text", "verbose_json"], {"default": "json"}),
+                "temperature": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.1, "display": "slider"}),
+            },
         }
 
     RETURN_TYPES = ("STRING", "STRING")
@@ -89,7 +63,7 @@ class GroqAudioNode:
         language: str = "",
         prompt: str = "",
         response_format: str = "json",
-        temperature: float = 0.0
+        temperature: float = 0.0,
     ) -> Tuple[str, str]:
         """
         Transcribe audio file using Groq Whisper API.
@@ -128,7 +102,7 @@ class GroqAudioNode:
                 "file": audio_file_path,
                 "model": model,
                 "response_format": response_format,
-                "temperature": temperature
+                "temperature": temperature,
             }
 
             if language:
@@ -137,10 +111,7 @@ class GroqAudioNode:
             if prompt:
                 request_params["prompt"] = prompt
 
-            response = self.retry_handler.execute(
-                client.audio.transcriptions.create,
-                **request_params
-            )
+            response = self.retry_handler.execute(client.audio.transcriptions.create, **request_params)
 
             transcription_text = self._extract_text(response, response_format)
             metadata = self._extract_metadata(response, response_format)
@@ -170,11 +141,11 @@ class GroqAudioNode:
         if response_format == "text":
             return response
 
-        if hasattr(response, 'text'):
+        if hasattr(response, "text"):
             return response.text
 
-        if isinstance(response, dict) and 'text' in response:
-            return response['text']
+        if isinstance(response, dict) and "text" in response:
+            return response["text"]
 
         return str(response)
 
@@ -196,29 +167,29 @@ class GroqAudioNode:
 
         metadata = {}
 
-        if hasattr(response, 'duration'):
-            metadata['duration'] = response.duration
+        if hasattr(response, "duration"):
+            metadata["duration"] = response.duration
 
-        if hasattr(response, 'language'):
-            metadata['language'] = response.language
+        if hasattr(response, "language"):
+            metadata["language"] = response.language
 
         if response_format == "verbose_json":
-            if hasattr(response, 'segments'):
-                metadata['segments'] = [
+            if hasattr(response, "segments"):
+                metadata["segments"] = [
                     {
-                        'start': seg.start if hasattr(seg, 'start') else None,
-                        'end': seg.end if hasattr(seg, 'end') else None,
-                        'text': seg.text if hasattr(seg, 'text') else None
+                        "start": seg.start if hasattr(seg, "start") else None,
+                        "end": seg.end if hasattr(seg, "end") else None,
+                        "text": seg.text if hasattr(seg, "text") else None,
                     }
                     for seg in response.segments
                 ]
 
-            if hasattr(response, 'words'):
-                metadata['words'] = [
+            if hasattr(response, "words"):
+                metadata["words"] = [
                     {
-                        'start': word.start if hasattr(word, 'start') else None,
-                        'end': word.end if hasattr(word, 'end') else None,
-                        'word': word.word if hasattr(word, 'word') else None
+                        "start": word.start if hasattr(word, "start") else None,
+                        "end": word.end if hasattr(word, "end") else None,
+                        "word": word.word if hasattr(word, "word") else None,
                     }
                     for word in response.words
                 ]

@@ -5,16 +5,10 @@ Provides function calling capabilities with JSON schema validation.
 Supports parallel tool execution and structured outputs.
 """
 
-from typing import Dict, Any, List, Tuple
 import json
+from typing import Any, Dict, List, Tuple
 
-from .groq_utils import (
-    GroqAPIManager,
-    RetryHandler,
-    ResponseParser,
-    ModelCache,
-    validate_json_schema
-)
+from .groq_utils import GroqAPIManager, ModelCache, ResponseParser, RetryHandler, validate_json_schema
 
 
 class GroqToolUseNode:
@@ -43,57 +37,41 @@ class GroqToolUseNode:
 
         return {
             "required": {
-                "prompt": ("STRING", {
-                    "multiline": True,
-                    "default": "What is the weather in San Francisco?"
-                }),
-                "tools_json": ("STRING", {
-                    "multiline": True,
-                    "default": json.dumps([{
-                        "type": "function",
-                        "function": {
-                            "name": "get_weather",
-                            "description": "Get the current weather for a location",
-                            "parameters": {
-                                "type": "object",
-                                "properties": {
-                                    "location": {
-                                        "type": "string",
-                                        "description": "City name"
+                "prompt": ("STRING", {"multiline": True, "default": "What is the weather in San Francisco?"}),
+                "tools_json": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": json.dumps(
+                            [
+                                {
+                                    "type": "function",
+                                    "function": {
+                                        "name": "get_weather",
+                                        "description": "Get the current weather for a location",
+                                        "parameters": {
+                                            "type": "object",
+                                            "properties": {
+                                                "location": {"type": "string", "description": "City name"},
+                                                "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                                            },
+                                            "required": ["location"],
+                                        },
                                     },
-                                    "unit": {
-                                        "type": "string",
-                                        "enum": ["celsius", "fahrenheit"]
-                                    }
-                                },
-                                "required": ["location"]
-                            }
-                        }
-                    }], indent=2)
-                }),
-                "model": (models, {
-                    "default": models[0]
-                }),
-                "temperature": ("FLOAT", {
-                    "default": 1.0,
-                    "min": 0.0,
-                    "max": 2.0,
-                    "step": 0.1,
-                    "display": "slider"
-                }),
+                                }
+                            ],
+                            indent=2,
+                        ),
+                    },
+                ),
+                "model": (models, {"default": models[0]}),
+                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
             },
             "optional": {
-                "api_key": ("STRING", {
-                    "default": "",
-                    "multiline": False
-                }),
-                "tool_choice": (["auto", "required", "none"], {
-                    "default": "auto"
-                }),
-                "parallel_tool_calls": ("BOOLEAN", {
-                    "default": True
-                }),
-            }
+                "api_key": ("STRING", {"default": "", "multiline": False}),
+                "tool_choice": (["auto", "required", "none"], {"default": "auto"}),
+                "parallel_tool_calls": ("BOOLEAN", {"default": True}),
+            },
         }
 
     RETURN_TYPES = ("STRING", "STRING", "STRING")
@@ -110,7 +88,7 @@ class GroqToolUseNode:
         temperature: float = 1.0,
         api_key: str = "",
         tool_choice: str = "auto",
-        parallel_tool_calls: bool = True
+        parallel_tool_calls: bool = True,
     ) -> Tuple[str, str, str]:
         """
         Execute chat completion with tool calling.
@@ -144,13 +122,10 @@ class GroqToolUseNode:
                 "temperature": temperature,
                 "tools": tools,
                 "tool_choice": tool_choice,
-                "parallel_tool_calls": parallel_tool_calls
+                "parallel_tool_calls": parallel_tool_calls,
             }
 
-            response = self.retry_handler.execute(
-                client.chat.completions.create,
-                **request_params
-            )
+            response = self.retry_handler.execute(client.chat.completions.create, **request_params)
 
             tool_calls = ResponseParser.parse_tool_calls(response)
 

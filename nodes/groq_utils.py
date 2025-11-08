@@ -5,20 +5,20 @@ This module provides core functionality for API management, error handling,
 and data conversion utilities used across all Groq nodes.
 """
 
-import os
-import json
-import time
-import base64
 import asyncio
+import base64
+import json
+import os
+import time
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Dict, Any, List, Tuple, Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
-from PIL import Image
-from groq import Groq, AsyncGroq
-from groq.types.chat import ChatCompletion
 from dotenv import load_dotenv
+from groq import AsyncGroq, Groq
+from groq.types.chat import ChatCompletion
+from PIL import Image
 
 load_dotenv()
 
@@ -51,8 +51,7 @@ class GroqAPIManager:
         api_key = api_key_input or os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError(
-                "Groq API key not found. Set GROQ_API_KEY environment variable "
-                "or provide it in the node interface."
+                "Groq API key not found. Set GROQ_API_KEY environment variable or provide it in the node interface."
             )
         return api_key.strip()
 
@@ -108,11 +107,7 @@ class RetryHandler:
     """
 
     def __init__(
-        self,
-        max_retries: int = 3,
-        base_delay: float = 1.0,
-        max_delay: float = 60.0,
-        exponential_base: float = 2.0
+        self, max_retries: int = 3, base_delay: float = 1.0, max_delay: float = 60.0, exponential_base: float = 2.0
     ):
         """
         Initialize retry handler.
@@ -138,7 +133,7 @@ class RetryHandler:
         Returns:
             Delay in seconds
         """
-        delay = self.base_delay * (self.exponential_base ** attempt)
+        delay = self.base_delay * (self.exponential_base**attempt)
         return min(delay, self.max_delay)
 
     def should_retry(self, exception: Exception, attempt: int) -> bool:
@@ -157,15 +152,7 @@ class RetryHandler:
 
         error_msg = str(exception).lower()
 
-        retryable_errors = [
-            "rate limit",
-            "timeout",
-            "connection",
-            "503",
-            "502",
-            "500",
-            "429"
-        ]
+        retryable_errors = ["rate limit", "timeout", "connection", "503", "502", "500", "429"]
 
         return any(err in error_msg for err in retryable_errors)
 
@@ -259,7 +246,7 @@ class ResponseParser:
             "completion_tokens": response.usage.completion_tokens,
             "total_tokens": response.usage.total_tokens,
             "model": response.model,
-            "finish_reason": response.choices[0].finish_reason
+            "finish_reason": response.choices[0].finish_reason,
         }
 
         return text, usage_info
@@ -278,13 +265,15 @@ class ResponseParser:
         tool_calls = []
         message = response.choices[0].message
 
-        if hasattr(message, 'tool_calls') and message.tool_calls:
+        if hasattr(message, "tool_calls") and message.tool_calls:
             for tool_call in message.tool_calls:
-                tool_calls.append({
-                    "id": tool_call.id,
-                    "name": tool_call.function.name,
-                    "arguments": json.loads(tool_call.function.arguments)
-                })
+                tool_calls.append(
+                    {
+                        "id": tool_call.id,
+                        "name": tool_call.function.name,
+                        "arguments": json.loads(tool_call.function.arguments),
+                    }
+                )
 
         return tool_calls
 
@@ -354,11 +343,7 @@ class ImageConverter:
         return base64.b64encode(img_bytes).decode("utf-8")
 
     @staticmethod
-    def tensor_to_base64(
-        tensor: np.ndarray,
-        format: str = "JPEG",
-        quality: int = 95
-    ) -> str:
+    def tensor_to_base64(tensor: np.ndarray, format: str = "JPEG", quality: int = 95) -> str:
         """
         Convert ComfyUI image tensor directly to base64.
 
@@ -374,11 +359,7 @@ class ImageConverter:
         return ImageConverter.pil_to_base64(pil_image, format, quality)
 
     @staticmethod
-    def batch_tensors_to_base64(
-        tensor: np.ndarray,
-        format: str = "JPEG",
-        quality: int = 95
-    ) -> List[str]:
+    def batch_tensors_to_base64(tensor: np.ndarray, format: str = "JPEG", quality: int = 95) -> List[str]:
         """
         Convert batch of image tensors to list of base64 strings.
 
@@ -428,16 +409,12 @@ class ModelCache:
             cls._cache_path = current_dir / "configs" / "models.json"
 
         try:
-            with open(cls._cache_path, 'r') as f:
+            with open(cls._cache_path, "r") as f:
                 cls._cache = json.load(f)
             return cls._cache
         except Exception as e:
             print(f"Error loading model config: {e}")
-            return {
-                "chat_models": [],
-                "vision_models": [],
-                "audio_models": []
-            }
+            return {"chat_models": [], "vision_models": [], "audio_models": []}
 
     @classmethod
     def get_model_list(cls, model_type: str) -> List[str]:

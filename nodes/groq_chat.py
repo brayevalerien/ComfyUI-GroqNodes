@@ -5,15 +5,10 @@ Provides text generation capabilities using Groq's chat completion models.
 Supports conversation history, streaming, and various generation parameters.
 """
 
-from typing import Dict, Any, List, Tuple
 import json
+from typing import Any, Dict, List, Tuple
 
-from .groq_utils import (
-    GroqAPIManager,
-    RetryHandler,
-    ResponseParser,
-    ModelCache
-)
+from .groq_utils import GroqAPIManager, ModelCache, ResponseParser, RetryHandler
 
 
 class GroqChatNode:
@@ -42,53 +37,24 @@ class GroqChatNode:
 
         return {
             "required": {
-                "prompt": ("STRING", {
-                    "multiline": True,
-                    "default": "Hello! How can I help you today?"
-                }),
-                "model": (models, {
-                    "default": models[0]
-                }),
-                "temperature": ("FLOAT", {
-                    "default": 1.0,
-                    "min": 0.0,
-                    "max": 2.0,
-                    "step": 0.1,
-                    "display": "slider"
-                }),
-                "max_tokens": ("INT", {
-                    "default": 1024,
-                    "min": 1,
-                    "max": 32768,
-                    "step": 1
-                }),
-                "top_p": ("FLOAT", {
-                    "default": 1.0,
-                    "min": 0.0,
-                    "max": 1.0,
-                    "step": 0.05,
-                    "display": "slider"
-                }),
+                "prompt": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": "In a single sentence, describe the moon using the kawaii neko style.",
+                    },
+                ),
+                "model": (models, {"default": models[0]}),
+                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
+                "max_tokens": ("INT", {"default": 1024, "min": 1, "max": 32768, "step": 1}),
+                "top_p": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.05, "display": "slider"}),
             },
             "optional": {
-                "api_key": ("STRING", {
-                    "default": "",
-                    "multiline": False
-                }),
-                "system_prompt": ("STRING", {
-                    "multiline": True,
-                    "default": ""
-                }),
-                "conversation_history": ("STRING", {
-                    "multiline": True,
-                    "default": "[]"
-                }),
-                "seed": ("INT", {
-                    "default": -1,
-                    "min": -1,
-                    "max": 2147483647
-                }),
-            }
+                "api_key": ("STRING", {"default": "", "multiline": False}),
+                "system_prompt": ("STRING", {"multiline": True, "default": ""}),
+                "conversation_history": ("STRING", {"multiline": True, "default": "[]"}),
+                "seed": ("INT", {"default": -1, "min": -1, "max": 2147483647}),
+            },
         }
 
     RETURN_TYPES = ("STRING", "STRING", "STRING")
@@ -107,7 +73,7 @@ class GroqChatNode:
         api_key: str = "",
         system_prompt: str = "",
         conversation_history: str = "[]",
-        seed: int = -1
+        seed: int = -1,
     ) -> Tuple[str, str, str]:
         """
         Generate text completion using Groq API.
@@ -133,11 +99,7 @@ class GroqChatNode:
         try:
             client = GroqAPIManager.get_client(api_key if api_key else None)
 
-            messages = self._build_messages(
-                prompt,
-                system_prompt,
-                conversation_history
-            )
+            messages = self._build_messages(prompt, system_prompt, conversation_history)
 
             request_params = {
                 "messages": messages,
@@ -150,17 +112,11 @@ class GroqChatNode:
             if seed >= 0:
                 request_params["seed"] = seed
 
-            response = self.retry_handler.execute(
-                client.chat.completions.create,
-                **request_params
-            )
+            response = self.retry_handler.execute(client.chat.completions.create, **request_params)
 
             response_text, usage_info = ResponseParser.parse_chat_completion(response)
 
-            updated_history = self._update_conversation_history(
-                messages,
-                response_text
-            )
+            updated_history = self._update_conversation_history(messages, response_text)
 
             usage_string = ResponseParser.format_usage_info(usage_info)
 
@@ -175,12 +131,7 @@ class GroqChatNode:
             print(error_msg)
             return (error_msg, "", conversation_history)
 
-    def _build_messages(
-        self,
-        prompt: str,
-        system_prompt: str,
-        conversation_history: str
-    ) -> List[Dict[str, str]]:
+    def _build_messages(self, prompt: str, system_prompt: str, conversation_history: str) -> List[Dict[str, str]]:
         """
         Build messages array from inputs.
 
@@ -208,11 +159,7 @@ class GroqChatNode:
 
         return messages
 
-    def _update_conversation_history(
-        self,
-        messages: List[Dict[str, str]],
-        response: str
-    ) -> List[Dict[str, str]]:
+    def _update_conversation_history(self, messages: List[Dict[str, str]], response: str) -> List[Dict[str, str]]:
         """
         Update conversation history with assistant response.
 

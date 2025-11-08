@@ -5,16 +5,11 @@ Provides concurrent batch processing for multiple prompts.
 Uses asyncio for efficient parallel request handling.
 """
 
-from typing import Dict, Any, List, Tuple
-import json
 import asyncio
+import json
+from typing import Any, Dict, List, Tuple
 
-from .groq_utils import (
-    GroqAPIManager,
-    RetryHandler,
-    ResponseParser,
-    ModelCache
-)
+from .groq_utils import GroqAPIManager, ModelCache, ResponseParser, RetryHandler
 
 
 class GroqBatchNode:
@@ -43,47 +38,22 @@ class GroqBatchNode:
 
         return {
             "required": {
-                "prompts_json": ("STRING", {
-                    "multiline": True,
-                    "default": json.dumps([
-                        "Tell me a joke",
-                        "What is 2+2?",
-                        "Name a color"
-                    ], indent=2)
-                }),
-                "model": (models, {
-                    "default": models[0]
-                }),
-                "temperature": ("FLOAT", {
-                    "default": 1.0,
-                    "min": 0.0,
-                    "max": 2.0,
-                    "step": 0.1,
-                    "display": "slider"
-                }),
-                "max_tokens": ("INT", {
-                    "default": 1024,
-                    "min": 1,
-                    "max": 32768,
-                    "step": 1
-                }),
+                "prompts_json": (
+                    "STRING",
+                    {
+                        "multiline": True,
+                        "default": json.dumps(["Tell me a joke", "What is 2+2?", "Name a color"], indent=2),
+                    },
+                ),
+                "model": (models, {"default": models[0]}),
+                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
+                "max_tokens": ("INT", {"default": 1024, "min": 1, "max": 32768, "step": 1}),
             },
             "optional": {
-                "api_key": ("STRING", {
-                    "default": "",
-                    "multiline": False
-                }),
-                "system_prompt": ("STRING", {
-                    "multiline": True,
-                    "default": ""
-                }),
-                "max_concurrent": ("INT", {
-                    "default": 5,
-                    "min": 1,
-                    "max": 20,
-                    "step": 1
-                }),
-            }
+                "api_key": ("STRING", {"default": "", "multiline": False}),
+                "system_prompt": ("STRING", {"multiline": True, "default": ""}),
+                "max_concurrent": ("INT", {"default": 5, "min": 1, "max": 20, "step": 1}),
+            },
         }
 
     RETURN_TYPES = ("STRING", "STRING", "STRING")
@@ -100,7 +70,7 @@ class GroqBatchNode:
         max_tokens: int = 1024,
         api_key: str = "",
         system_prompt: str = "",
-        max_concurrent: int = 5
+        max_concurrent: int = 5,
     ) -> Tuple[str, str, str]:
         """
         Process multiple prompts concurrently.
@@ -129,13 +99,7 @@ class GroqBatchNode:
 
             responses, errors = asyncio.run(
                 self._process_batch_async(
-                    prompts,
-                    model,
-                    temperature,
-                    max_tokens,
-                    api_key,
-                    system_prompt,
-                    max_concurrent
+                    prompts, model, temperature, max_tokens, api_key, system_prompt, max_concurrent
                 )
             )
 
@@ -163,7 +127,7 @@ class GroqBatchNode:
         max_tokens: int,
         api_key: str,
         system_prompt: str,
-        max_concurrent: int
+        max_concurrent: int,
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """
         Process batch of prompts asynchronously with concurrency limit.
@@ -185,16 +149,7 @@ class GroqBatchNode:
         semaphore = asyncio.Semaphore(max_concurrent)
 
         tasks = [
-            self._process_single_prompt(
-                client,
-                prompt,
-                model,
-                temperature,
-                max_tokens,
-                system_prompt,
-                semaphore,
-                index
-            )
+            self._process_single_prompt(client, prompt, model, temperature, max_tokens, system_prompt, semaphore, index)
             for index, prompt in enumerate(prompts)
         ]
 
@@ -205,11 +160,7 @@ class GroqBatchNode:
 
         for index, result in enumerate(results):
             if isinstance(result, Exception):
-                errors.append({
-                    "index": index,
-                    "prompt": prompts[index],
-                    "error": str(result)
-                })
+                errors.append({"index": index, "prompt": prompts[index], "error": str(result)})
             elif isinstance(result, dict) and "error" in result:
                 errors.append(result)
             else:
@@ -226,7 +177,7 @@ class GroqBatchNode:
         max_tokens: int,
         system_prompt: str,
         semaphore: asyncio.Semaphore,
-        index: int
+        index: int,
     ) -> Dict[str, Any]:
         """
         Process a single prompt with semaphore for concurrency control.
@@ -258,24 +209,15 @@ class GroqBatchNode:
                     messages=messages,
                     model=model,
                     temperature=temperature,
-                    max_tokens=max_tokens
+                    max_tokens=max_tokens,
                 )
 
                 response_text, usage_info = ResponseParser.parse_chat_completion(response)
 
-                return {
-                    "index": index,
-                    "prompt": prompt,
-                    "response": response_text,
-                    "usage": usage_info
-                }
+                return {"index": index, "prompt": prompt, "response": response_text, "usage": usage_info}
 
             except Exception as e:
-                return {
-                    "index": index,
-                    "prompt": prompt,
-                    "error": str(e)
-                }
+                return {"index": index, "prompt": prompt, "error": str(e)}
 
     def _parse_prompts(self, prompts_json: str) -> List[str]:
         """
@@ -305,10 +247,7 @@ class GroqBatchNode:
             raise ValueError(f"Invalid JSON in prompts: {e}")
 
     def _generate_summary(
-        self,
-        prompts: List[str],
-        responses: List[Dict[str, Any]],
-        errors: List[Dict[str, Any]]
+        self, prompts: List[str], responses: List[Dict[str, Any]], errors: List[Dict[str, Any]]
     ) -> str:
         """
         Generate summary of batch processing results.
@@ -325,10 +264,7 @@ class GroqBatchNode:
         success = len(responses)
         failed = len(errors)
 
-        total_tokens = sum(
-            resp.get("usage", {}).get("total_tokens", 0)
-            for resp in responses
-        )
+        total_tokens = sum(resp.get("usage", {}).get("total_tokens", 0) for resp in responses)
 
         summary = "Batch Processing Summary:\n"
         summary += f"Total: {total}, Success: {success}, Failed: {failed}\n"

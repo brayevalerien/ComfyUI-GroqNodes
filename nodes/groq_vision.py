@@ -5,16 +5,11 @@ Provides image analysis capabilities using Groq's vision-enabled models.
 Supports batch image processing and multi-image conversations.
 """
 
-from typing import Dict, Any, List, Tuple
+from typing import Any, Dict, List, Tuple
+
 import torch
 
-from .groq_utils import (
-    GroqAPIManager,
-    RetryHandler,
-    ResponseParser,
-    ImageConverter,
-    ModelCache
-)
+from .groq_utils import GroqAPIManager, ImageConverter, ModelCache, ResponseParser, RetryHandler
 
 
 class GroqVisionNode:
@@ -44,43 +39,16 @@ class GroqVisionNode:
         return {
             "required": {
                 "image": ("IMAGE",),
-                "prompt": ("STRING", {
-                    "multiline": True,
-                    "default": "What is in this image?"
-                }),
-                "model": (models, {
-                    "default": models[0]
-                }),
-                "temperature": ("FLOAT", {
-                    "default": 1.0,
-                    "min": 0.0,
-                    "max": 2.0,
-                    "step": 0.1,
-                    "display": "slider"
-                }),
-                "max_tokens": ("INT", {
-                    "default": 1024,
-                    "min": 1,
-                    "max": 8192,
-                    "step": 1
-                }),
+                "prompt": ("STRING", {"multiline": True, "default": "What is in this image?"}),
+                "model": (models, {"default": models[0]}),
+                "temperature": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1, "display": "slider"}),
+                "max_tokens": ("INT", {"default": 1024, "min": 1, "max": 8192, "step": 1}),
             },
             "optional": {
-                "api_key": ("STRING", {
-                    "default": "",
-                    "multiline": False
-                }),
-                "system_prompt": ("STRING", {
-                    "multiline": True,
-                    "default": ""
-                }),
-                "jpeg_quality": ("INT", {
-                    "default": 95,
-                    "min": 50,
-                    "max": 100,
-                    "step": 5
-                }),
-            }
+                "api_key": ("STRING", {"default": "", "multiline": False}),
+                "system_prompt": ("STRING", {"multiline": True, "default": ""}),
+                "jpeg_quality": ("INT", {"default": 95, "min": 50, "max": 100, "step": 5}),
+            },
         }
 
     RETURN_TYPES = ("STRING", "STRING")
@@ -98,7 +66,7 @@ class GroqVisionNode:
         max_tokens: int = 1024,
         api_key: str = "",
         system_prompt: str = "",
-        jpeg_quality: int = 95
+        jpeg_quality: int = 95,
     ) -> Tuple[str, str]:
         """
         Analyze image(s) using Groq vision API.
@@ -125,17 +93,9 @@ class GroqVisionNode:
 
             image_np = image.cpu().numpy()
 
-            base64_images = ImageConverter.batch_tensors_to_base64(
-                image_np,
-                format="JPEG",
-                quality=jpeg_quality
-            )
+            base64_images = ImageConverter.batch_tensors_to_base64(image_np, format="JPEG", quality=jpeg_quality)
 
-            messages = self._build_vision_messages(
-                prompt,
-                base64_images,
-                system_prompt
-            )
+            messages = self._build_vision_messages(prompt, base64_images, system_prompt)
 
             request_params = {
                 "messages": messages,
@@ -144,10 +104,7 @@ class GroqVisionNode:
                 "max_tokens": max_tokens,
             }
 
-            response = self.retry_handler.execute(
-                client.chat.completions.create,
-                **request_params
-            )
+            response = self.retry_handler.execute(client.chat.completions.create, **request_params)
 
             response_text, usage_info = ResponseParser.parse_chat_completion(response)
             usage_string = ResponseParser.format_usage_info(usage_info)
@@ -163,12 +120,7 @@ class GroqVisionNode:
             print(error_msg)
             return (error_msg, "")
 
-    def _build_vision_messages(
-        self,
-        prompt: str,
-        base64_images: List[str],
-        system_prompt: str
-    ) -> List[Dict[str, Any]]:
+    def _build_vision_messages(self, prompt: str, base64_images: List[str], system_prompt: str) -> List[Dict[str, Any]]:
         """
         Build messages array for vision API.
 
@@ -183,26 +135,15 @@ class GroqVisionNode:
         messages = []
 
         if system_prompt:
-            messages.append({
-                "role": "system",
-                "content": system_prompt
-            })
+            messages.append({"role": "system", "content": system_prompt})
 
         content = [{"type": "text", "text": prompt}]
 
         for base64_image in base64_images:
-            image_content = {
-                "type": "image_url",
-                "image_url": {
-                    "url": f"data:image/jpeg;base64,{base64_image}"
-                }
-            }
+            image_content = {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
 
             content.append(image_content)
 
-        messages.append({
-            "role": "user",
-            "content": content
-        })
+        messages.append({"role": "user", "content": content})
 
         return messages
