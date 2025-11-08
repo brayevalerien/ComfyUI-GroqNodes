@@ -2,56 +2,71 @@
   "chat_models": [
     {
       "id": "llama-3.3-70b-versatile",
-      "context": 128000,
-      "description": "Latest Llama 3.3 70B model with large context"
-    },
-    {
-      "id": "llama-3.1-70b-versatile",
-      "context": 128000,
-      "description": "Llama 3.1 70B versatile model"
+      "context": 131072,
+      "speed": "280 T/sec",
+      "description": "Llama 3.3 70B versatile model with 131K context"
     },
     {
       "id": "llama-3.1-8b-instant",
-      "context": 128000,
-      "description": "Fast Llama 3.1 8B model"
+      "context": 131072,
+      "speed": "560 T/sec",
+      "description": "Fast Llama 3.1 8B instant model with 131K context"
     },
     {
-      "id": "mixtral-8x7b-32768",
-      "context": 32768,
-      "description": "Mixtral 8x7B mixture of experts"
+      "id": "openai/gpt-oss-120b",
+      "context": 131072,
+      "speed": "500 T/sec",
+      "description": "OpenAI GPT-OSS 120B model with 131K context"
     },
     {
-      "id": "gemma2-9b-it",
-      "context": 8192,
-      "description": "Google Gemma 2 9B instruction tuned"
+      "id": "openai/gpt-oss-20b",
+      "context": 131072,
+      "speed": "1000 T/sec",
+      "description": "OpenAI GPT-OSS 20B model with 131K context"
+    },
+    {
+      "id": "groq/compound",
+      "context": 131072,
+      "speed": "450 T/sec",
+      "description": "Agentic model with web search, code execution, and reasoning"
+    },
+    {
+      "id": "groq/compound-mini",
+      "context": 131072,
+      "speed": "450 T/sec",
+      "description": "Lighter agentic model with web search and reasoning capabilities"
+    },
+    {
+      "id": "meta-llama/llama-guard-4-12b",
+      "context": 131072,
+      "speed": "1200 T/sec",
+      "description": "Content screening and safety model"
     }
   ],
   "vision_models": [
     {
-      "id": "llama-3.2-11b-vision-preview",
-      "context": 128000,
+      "id": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "context": 131072,
       "max_image_size": "20MB",
-      "description": "Llama 3.2 11B with vision capabilities"
+      "description": "Llama 4 Scout 17B multimodal model"
     },
     {
-      "id": "llama-3.2-90b-vision-preview",
-      "context": 128000,
+      "id": "meta-llama/llama-4-maverick-17b-128e-instruct",
+      "context": 131072,
       "max_image_size": "20MB",
-      "description": "Llama 3.2 90B with vision capabilities"
+      "description": "Llama 4 Maverick 17B multimodal model"
     }
   ],
   "audio_models": [
     {
       "id": "whisper-large-v3",
-      "description": "Whisper large v3 for transcription"
+      "context": 448,
+      "description": "Whisper large v3 for audio transcription"
     },
     {
       "id": "whisper-large-v3-turbo",
-      "description": "Faster Whisper large v3 variant"
-    },
-    {
-      "id": "distil-whisper-large-v3-en",
-      "description": "Distilled Whisper for English only"
+      "context": 448,
+      "description": "Faster Whisper large v3 turbo variant"
     }
   ]
 }
