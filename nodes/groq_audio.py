@@ -224,12 +224,3 @@ class GroqAudioNode:
                 ]
 
         return json.dumps(metadata, indent=2)
-
-
-NODE_CLASS_MAPPINGS = {
-    "GroqAudio": GroqAudioNode
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "GroqAudio": "Groq Audio"
-}

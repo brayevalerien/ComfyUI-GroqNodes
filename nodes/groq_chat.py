@@ -226,12 +226,3 @@ class GroqChatNode:
         updated = messages.copy()
         updated.append({"role": "assistant", "content": response})
         return updated
-
-
-NODE_CLASS_MAPPINGS = {
-    "GroqChat": GroqChatNode
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "GroqChat": "Groq Chat"
-}

@@ -1,10 +1,9 @@
 import pytest
 import os
-import json
 import numpy as np
 from PIL import Image
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))

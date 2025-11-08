@@ -216,12 +216,3 @@ class GroqToolUseNode:
 
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in tools definition: {e}")
-
-
-NODE_CLASS_MAPPINGS = {
-    "GroqToolUse": GroqToolUseNode
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "GroqToolUse": "Groq Tool Use"
-}

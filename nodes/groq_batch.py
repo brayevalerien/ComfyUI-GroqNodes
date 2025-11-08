@@ -330,7 +330,7 @@ class GroqBatchNode:
             for resp in responses
         )
 
-        summary = f"Batch Processing Summary:\n"
+        summary = "Batch Processing Summary:\n"
         summary += f"Total: {total}, Success: {success}, Failed: {failed}\n"
         summary += f"Total Tokens Used: {total_tokens}\n"
 
@@ -338,12 +338,3 @@ class GroqBatchNode:
             summary += f"\nFailed prompts (indices): {[e['index'] for e in errors]}"
 
         return summary
-
-
-NODE_CLASS_MAPPINGS = {
-    "GroqBatch": GroqBatchNode
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "GroqBatch": "Groq Batch"
-}

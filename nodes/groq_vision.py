@@ -206,12 +206,3 @@ class GroqVisionNode:
         })
 
         return messages
-
-
-NODE_CLASS_MAPPINGS = {
-    "GroqVision": GroqVisionNode
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "GroqVision": "Groq Vision"
-}
