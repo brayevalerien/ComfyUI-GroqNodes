@@ -1,0 +1,15 @@
+# pyproject.toml
+[project]
+name = "comfyui-groqnodes"
+description = ""
+version = "1.0.0"
+license = { file = "LICENSE.txt" }
+dependencies  = []
+
+[project.urls]
+Repository = "https://github.com/brayevalerien/ComfyUI-GroqNodes"
+
+[tool.comfy]
+PublisherId = "val"
+DisplayName = "Groq Nodes"
+Icon = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.b-Fd2MUHbxlTeBCNszge1QHaHa%3Fcb%3Ducfimgc2%26pid%3DApi&f=1&ipt=ef49f62cb977f4f3b83b6143785e45b9ac2874faa47f73ff0fd9f7cb48d39817"
