@@ -5,7 +5,7 @@ Provides text generation capabilities using Groq's chat completion models.
 Supports conversation history, streaming, and various generation parameters.
 """
 
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple
 import json
 
 from .groq_utils import (
