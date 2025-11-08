@@ -18,6 +18,9 @@ import numpy as np
 from PIL import Image
 from groq import Groq, AsyncGroq
 from groq.types.chat import ChatCompletion
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class GroqAPIManager:

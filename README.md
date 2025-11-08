@@ -21,12 +21,20 @@ cd ComfyUI-GroqNodes
 pip install -r requirements.txt
 ```
 
-3. Set your Groq API key:
+3. Set your Groq API key (choose one method):
+Option A: Using .env file (recommended)
+```bash
+cp .env.example .env
+# Edit .env and add your API key
+```
+
+Option B: Using environment variable
 ```bash
 export GROQ_API_KEY="your_api_key_here"
 ```
 
-Or provide it directly in the node interface.
+**Option C: Direct input**
+Provide the API key directly in each node's interface.
 
 ## Usage
 ### Basic Chat Example
